@@ -29,8 +29,9 @@ classifiers = [
     "Typing :: Typed",
 ]
 keywords = [
-    "ai", "two-player", "libcomponent", "single-player",
-    "libcomponent-game", "ai-support", "networked-game"
+    "component", "component-system", "ecs",
+    "event-system", "networking", "networked-events",
+    "encryption"
 ]
 dependencies = [
     "typing_extensions>=4.12.2",
