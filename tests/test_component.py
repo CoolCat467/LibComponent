@@ -368,3 +368,89 @@ async def test_remove_component() -> None:
     manager.remove_component("jerald")
     manager.remove_component("sound_effect")
     assert not manager.component_exists("sound_effect")
+
+
+def test_unregister_handler() -> None:
+    async def event_call(event: Event[int]) -> None:
+        return
+
+    async def event_call2(event: Event[int]) -> None:
+        return
+
+    manager = ComponentManager("manager")
+    sound_effect = Component("sound_effect")
+    manager.add_component(sound_effect)
+    assert manager.component_exists("sound_effect")
+    sound_effect.register_handler("event_name", event_call)
+    sound_effect.register_handler("event_name", event_call2)
+
+    assert sound_effect.has_handler("event_name")
+
+    sound_effect.unregister_handler("event_name", event_call)
+
+    assert sound_effect.has_handler("event_name")
+
+    sound_effect.unregister_handler("event_name", event_call2)
+
+    assert not sound_effect.has_handler("event_name")
+
+
+def test_unregister_handler_unregistered_failure() -> None:
+    async def event_call(event: Event[int]) -> None:
+        return
+
+    manager = ComponentManager("manager")
+    with pytest.raises(
+        ValueError,
+        match="^Component named 'cat' is not registered!$",
+    ):
+        manager.unregister_component_handler("event_name", event_call, "cat")
+
+
+def test_unregister_handler_unregistered_handler_is_ok() -> None:
+    async def event_call(event: Event[int]) -> None:
+        return
+
+    manager = ComponentManager("manager")
+    manager.unregister_handler("event_name", event_call)
+
+
+def test_unregister_handler_duplicate_type() -> None:
+    async def event_call(event: Event[int]) -> None:
+        return
+
+    async def event_call2(event: Event[int]) -> None:
+        return
+
+    manager = ComponentManager("manager")
+    manager.register_handler("event_name", event_call)
+
+    manager.unregister_handler("event_name", event_call2)
+
+    assert manager.has_handler("event_name")
+
+
+def test_unregister_handler_type() -> None:
+    async def event_call(event: Event[int]) -> None:
+        return
+
+    async def event_call2(event: Event[int]) -> None:
+        return
+
+    manager = ComponentManager("manager")
+    sound_effect = Component("sound_effect")
+    manager.add_component(sound_effect)
+    assert manager.component_exists("sound_effect")
+    sound_effect.register_handler("event_name", event_call)
+    sound_effect.register_handler("event_name", event_call2)
+
+    assert sound_effect.has_handler("event_name")
+
+    sound_effect.unregister_handler_type("event_name")
+
+    assert not sound_effect.has_handler("event_name")
+
+
+def test_unregister_handler_type_unregistered_handler_is_ok() -> None:
+    manager = ComponentManager("manager")
+    manager.unregister_handler_type("event_name")
