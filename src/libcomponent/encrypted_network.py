@@ -83,7 +83,7 @@ class EncryptedNetworkEventComponent(NetworkEventComponent):
         self.encryptor = self.cipher.encryptor()
         self.decryptor = self.cipher.decryptor()
 
-    async def write(self, data: bytes) -> None:
+    async def write(self, data: bytes | bytearray | memoryview) -> None:
         """Send the given data, encrypted through the stream, blocking if necessary.
 
         Args:

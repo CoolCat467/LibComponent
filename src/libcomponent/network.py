@@ -194,12 +194,6 @@ class NetworkComponent(Component, BaseAsyncReader, BaseAsyncWriter):
         """
         await self.stream.send_all(data)
 
-    # try:
-    # await self.stream.send_all(data)
-    # except (trio.BrokenResourceError, trio.ClosedResourceError):
-    # await self.close()
-    # raise
-
     async def close(self) -> None:
         """Close the stream, possibly blocking."""
         if self._stream is None:
@@ -370,7 +364,10 @@ class NetworkEventComponent(NetworkComponent):
         for event_name, packet_id in event_map.items():
             self.register_network_write_event(event_name, packet_id)
 
-    async def write_event(self, event: Event[bytearray]) -> None:
+    async def write_event(
+        self,
+        event: Event[bytes | bytearray | memoryview],
+    ) -> None:
         """Send event to network.
 
         Raises:
@@ -399,7 +396,7 @@ class NetworkEventComponent(NetworkComponent):
     async def write_event_last_minute_data(
         self,
         event_name: str,
-        event_data_function: Callable[[], bytearray],
+        event_data_function: Callable[[], bytes | bytearray | memoryview],
     ) -> None:
         """Write event to network, but have data to send be generated last minute.
 
