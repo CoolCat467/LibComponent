@@ -375,7 +375,7 @@ class NetworkEventComponent(NetworkComponent):
             raise ValueError(
                 f"{write_event_name!r} write event not registered!",
             )
-        self._write_event_name_to_packet_id.remove(write_event_name)
+        del self._write_event_name_to_packet_id[write_event_name]
         if self.manager_exists:
             self.unregister_handler_type(write_event_name)
 
@@ -524,7 +524,7 @@ class NetworkEventComponent(NetworkComponent):
         if read_packet_id not in self._read_packet_id_to_event_name:
             raise ValueError(f"Packet ID {read_packet_id!r} not registered!")
         event_name = self._read_packet_id_to_event_name[read_packet_id]
-        self._read_packet_id_to_event_name.remove(read_packet_id)
+        del self._read_packet_id_to_event_name[read_packet_id]
         if self.manager_exists:
             self.unregister_handler_type(event_name)
 
