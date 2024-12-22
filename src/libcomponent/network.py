@@ -47,7 +47,7 @@ from libcomponent.component import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterable
     from types import TracebackType
 
     from typing_extensions import Self
@@ -364,6 +364,43 @@ class NetworkEventComponent(NetworkComponent):
         for event_name, packet_id in event_map.items():
             self.register_network_write_event(event_name, packet_id)
 
+    def unregister_network_write_event(self, write_event_name: str) -> None:
+        """Unregister given network write event.
+
+        Will unregister all event handlers for given write event.
+
+        Raises ValueError if given write event name is not registered.
+        """
+        if write_event_name not in self._write_event_name_to_packet_id:
+            raise ValueError(
+                f"{write_event_name!r} write event not registered!",
+            )
+        self._write_event_name_to_packet_id.remove(write_event_name)
+        if self.manager_exists:
+            self.unregister_handler_type(write_event_name)
+
+    def unregister_network_write_events(
+        self,
+        write_events: Iterable[str],
+    ) -> None:
+        """Unregister given network write events.
+
+        Will unregister all event handlers for given write events.
+
+        Raises ValueError any given write event name is not registered.
+        """
+        for event_name in write_events:
+            self.unregister_network_write_event(event_name)
+
+    def unregister_all_network_write_events(self) -> None:
+        """Unregister all network write events.
+
+        Will unregister all event handlers for all write events.
+        """
+        self.unregister_network_write_events(
+            tuple(self._write_event_name_to_packet_id),
+        )
+
     async def write_event(
         self,
         event: Event[bytes | bytearray | memoryview],
@@ -391,7 +428,11 @@ class NetworkEventComponent(NetworkComponent):
         buffer.write_bytearray(event.data)
 
         async with self.write_lock:
-            await self.write(buffer)
+            try:
+                await self.write(buffer)
+            except NetworkStreamNotConnectedError as exc:
+                exc.add_note(f"{event = }")
+                raise
 
     async def write_event_last_minute_data(
         self,
@@ -472,6 +513,42 @@ class NetworkEventComponent(NetworkComponent):
         """Map clientbound packet ids to event names."""
         for packet_id, event_name in packet_map.items():
             self.register_read_network_event(packet_id, event_name)
+
+    def unregister_read_network_event(self, read_packet_id: int) -> None:
+        """Unregister given network read packet ID.
+
+        Will unregister all event handlers for given read event.
+
+        Raises ValueError if given read event packet ID is not registered.
+        """
+        if read_packet_id not in self._read_packet_id_to_event_name:
+            raise ValueError(f"Packet ID {read_packet_id!r} not registered!")
+        event_name = self._read_packet_id_to_event_name[read_packet_id]
+        self._read_packet_id_to_event_name.remove(read_packet_id)
+        if self.manager_exists:
+            self.unregister_handler_type(event_name)
+
+    def unregister_read_network_events(
+        self,
+        read_events: Iterable[int],
+    ) -> None:
+        """Unregister given network read packet IDs.
+
+        Will unregister all event handlers for given read events.
+
+        Raises ValueError any given read event packet ID is not registered.
+        """
+        for packet_id in read_events:
+            self.unregister_read_network_event(packet_id)
+
+    def unregister_all_read_network_events(self) -> None:
+        """Unregister all network read packet IDs.
+
+        Will unregister all event handlers for all read events.
+        """
+        self.unregister_read_network_events(
+            tuple(self._read_packet_id_to_event_name),
+        )
 
 
 class Server(ComponentManager):

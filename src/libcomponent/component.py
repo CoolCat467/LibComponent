@@ -152,6 +152,7 @@ class Component:
     ) -> None:
         """Unregister a handler function for event_name.
 
+        Raises AttributeError if this component is not bound.
         Raises ValueError if no component with given name is registered.
         """
         return self.manager.unregister_component_handler(
@@ -161,7 +162,10 @@ class Component:
         )
 
     def unregister_handler_type(self, event_name: str) -> None:
-        """Unregister all event handlers for a given event type."""
+        """Unregister all event handlers for a given event type.
+
+        Raises AttributeError if this component is not bound.
+        """
         self.manager.unregister_handler_type(event_name)
 
     async def raise_event(self, event: Event[Any]) -> None:
@@ -332,6 +336,7 @@ class ComponentManager(Component):
         # Forward leveled events up; They'll come back to us soon enough.
         if self.manager_exists and event.pop_level():
             await super().raise_event(event)
+            # nursery.start_soon(super().raise_event, event)
             return
         # Make sure events not raised twice
         # if not self.manager_exists:
@@ -485,6 +490,7 @@ class ExternalRaiseManager(ComponentManager):
 
         Could raise RuntimeError if self.nursery is no longer open.
         """
+        # print(f'[libcomponent.component.ExternalRaiseManager] {event = }')
         await self.raise_event_in_nursery(event, self.nursery)
 
     async def raise_event_internal(self, event: Event[Any]) -> None:
