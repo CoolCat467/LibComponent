@@ -466,7 +466,7 @@ class BaseAsyncReader(ABC):
             # (if the current amount of bits is higher than allowed size in bits)
             if result > value_max:
                 raise OSError(
-                    f"Received varint was outside the range of {max_bits}-bit int.",
+                    f"Received varint was outside the range of {max_bits}-bit int ({result}).",
                 )
 
             # If the most significant bit is 0, we should stop reading

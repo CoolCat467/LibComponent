@@ -490,7 +490,9 @@ class NetworkEventComponent(NetworkComponent):
             event_data = await self.read_bytearray()
         event_name = self._read_packet_id_to_event_name.get(packet_id)
         if event_name is None:
-            raise RuntimeError(f"Unhandled packet ID {packet_id!r}")
+            exc = RuntimeError(f"Unhandled packet ID {packet_id!r}")
+            exc.add_note(f"{event_data = }")
+            raise exc
         return Event(event_name, event_data)
 
     def register_read_network_event(

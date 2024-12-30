@@ -490,7 +490,8 @@ class ExternalRaiseManager(ComponentManager):
 
         Could raise RuntimeError if self.nursery is no longer open.
         """
-        # print(f'[libcomponent.component.ExternalRaiseManager] {event = }')
+        # if not event.name.startswith("Pygame") and event.name not in {"tick"}:
+        #    print(f'[libcomponent.component.ExternalRaiseManager] {event = }')
         await self.raise_event_in_nursery(event, self.nursery)
 
     async def raise_event_internal(self, event: Event[Any]) -> None:
