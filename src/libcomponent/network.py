@@ -26,6 +26,7 @@ __version__ = "0.0.0"
 
 
 import contextlib
+import sys
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -491,7 +492,8 @@ class NetworkEventComponent(NetworkComponent):
         event_name = self._read_packet_id_to_event_name.get(packet_id)
         if event_name is None:
             exc = RuntimeError(f"Unhandled packet ID {packet_id!r}")
-            exc.add_note(f"{event_data = }")
+            if sys.version_info >= (3, 11):
+                exc.add_note(f"{event_data = }")
             raise exc
         return Event(event_name, event_data)
 
