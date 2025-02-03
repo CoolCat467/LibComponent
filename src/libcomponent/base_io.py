@@ -12,12 +12,14 @@ import struct
 from abc import ABC, abstractmethod
 from enum import Enum
 from itertools import count
-from typing import TYPE_CHECKING, Literal, TypeAlias, TypeVar, overload
+from typing import TYPE_CHECKING, Literal, TypeVar, overload
 
 from .utils import from_twos_complement, to_twos_complement
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
+
+    from typing_extensions import TypeAlias
 
 __all__ = [
     "FLOAT_FORMATS_TYPE",
