@@ -15,6 +15,8 @@ on:
 jobs:
   release-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Required to check out the repository
 
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +43,9 @@ jobs:
     needs:
       - release-build
     permissions:
-      id-token: write
+      id-token: write  # Required for publishing to PyPI
+      contents: read  # Required to access the repository contents
+      packages: write  # Required to publish packages
 
     steps:
       - name: Retrieve release distributions

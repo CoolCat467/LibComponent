@@ -24,6 +24,7 @@ __author__ = "CoolCat467"
 __license__ = "GNU General Public License Version 3"
 __version__ = "0.0.2"
 
+import sys
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from weakref import ref
@@ -173,7 +174,12 @@ class Component:
 
         Raises AttributeError if this component is not bound.
         """
-        await self.manager.raise_event(event)
+        try:
+            await self.manager.raise_event(event)
+        except Exception as exc:
+            if sys.version_info >= (3, 11):  # pragma: nocover
+                exc.add_note(f"{event = }")
+            raise
 
     def component_exists(self, component_name: str) -> bool:
         """Return if component exists in manager.
