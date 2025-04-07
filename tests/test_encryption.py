@@ -39,7 +39,7 @@ zmnkw1hek/JcfQBlVYo3gFmWBh6Hl1Lb7p3TKUViJCA1k2f0aGv7+d9aFS0fRq6u
 -----END PRIVATE KEY-----
 """
 RSA_PRIVATE_KEY = cast(
-    RSAPrivateKey,
+    "RSAPrivateKey",
     load_pem_private_key(_SERIALIZED_RSA_PRIVATE_KEY, password=None),
 )
 RSA_PUBLIC_KEY = RSA_PRIVATE_KEY.public_key()
