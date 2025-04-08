@@ -6,10 +6,9 @@ from __future__ import annotations
 __author__ = "ItsDrike"
 __license__ = "LGPL-3.0-only"
 
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
@@ -19,6 +18,9 @@ from libcomponent.encryption import (
     encrypt_token_and_secret,
     serialize_public_key,
 )
+
+if TYPE_CHECKING:
+    from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 
 _SERIALIZED_RSA_PRIVATE_KEY = b"""
 -----BEGIN PRIVATE KEY-----
@@ -39,7 +41,7 @@ zmnkw1hek/JcfQBlVYo3gFmWBh6Hl1Lb7p3TKUViJCA1k2f0aGv7+d9aFS0fRq6u
 -----END PRIVATE KEY-----
 """
 RSA_PRIVATE_KEY = cast(
-    RSAPrivateKey,
+    "RSAPrivateKey",
     load_pem_private_key(_SERIALIZED_RSA_PRIVATE_KEY, password=None),
 )
 RSA_PUBLIC_KEY = RSA_PRIVATE_KEY.public_key()
