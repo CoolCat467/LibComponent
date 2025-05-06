@@ -37,7 +37,7 @@ keywords = [
 dependencies = [
     "typing_extensions>=4.12.2",
     "mypy_extensions>=1.0.0",
-    "trio~=0.29.0",
+    "trio~=0.30.0",
     "cryptography>=43.0.0",
 ]
 
