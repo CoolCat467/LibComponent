@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-# Copyright (C) 2023-2024  CoolCat467
+# Copyright (C) 2023-2025  CoolCat467
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

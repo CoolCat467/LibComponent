@@ -67,7 +67,7 @@ def generate_rsa_key() -> RSAPrivateKey:  # pragma: no cover
 
 def encrypt_with_rsa(
     public_key: RSAPublicKey,
-    data: bytes,
+    data: bytes | bytearray,
 ) -> bytes:
     """Encrypt given data with given RSA public key."""
     return public_key.encrypt(
@@ -78,8 +78,8 @@ def encrypt_with_rsa(
 
 def encrypt_token_and_secret(
     public_key: RSAPublicKey,
-    verification_token: bytes,
-    shared_secret: bytes,
+    verification_token: bytes | bytearray,
+    shared_secret: bytes | bytearray,
 ) -> tuple[bytes, bytes]:
     """Encrypts the verification token and shared secret with the server's public key.
 
@@ -95,7 +95,7 @@ def encrypt_token_and_secret(
 
 def decrypt_with_rsa(
     private_key: RSAPrivateKey,
-    data: bytes,
+    data: bytes | bytearray,
 ) -> bytes:
     """Decrypt given data with given RSA private key."""
     return private_key.decrypt(
@@ -106,8 +106,8 @@ def decrypt_with_rsa(
 
 def decrypt_token_and_secret(
     private_key: RSAPrivateKey,
-    verification_token: bytes,
-    shared_secret: bytes,
+    verification_token: bytes | bytearray,
+    shared_secret: bytes | bytearray,
 ) -> tuple[bytes, bytes]:
     """Decrypts the verification token and shared secret with the server's private key.
 
@@ -131,10 +131,12 @@ def serialize_public_key(
     )
 
 
-def deserialize_public_key(serialized_public_key: bytes) -> RSAPublicKey:
+def deserialize_public_key(
+    serialized_public_key: bytes | bytearray,
+) -> RSAPublicKey:
     """Return deserialized public key."""
     # Key type is determined by the passed key itself.
     # Should be be an RSA public key in this case.
-    key = load_der_public_key(serialized_public_key, default_backend())
+    key = load_der_public_key(bytes(serialized_public_key), default_backend())
     assert isinstance(key, RSAPublicKey)
     return key

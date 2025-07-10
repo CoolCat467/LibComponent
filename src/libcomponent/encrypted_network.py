@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 # Encrypted Network - Encrypt and decrypt network event data.
-# Copyright (C) 2024  CoolCat467
+# Copyright (C) 2024-2025  CoolCat467
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -62,8 +62,8 @@ class EncryptedNetworkEventComponent(NetworkEventComponent):
 
     def enable_encryption(
         self,
-        shared_secret: bytes,
-        initialization_vector: bytes,
+        shared_secret: bytes | bytearray,
+        initialization_vector: bytes | bytearray,
     ) -> None:
         """Enable encryption for this connection, using the ``shared_secret``.
 
@@ -83,7 +83,7 @@ class EncryptedNetworkEventComponent(NetworkEventComponent):
         self.encryptor = self.cipher.encryptor()
         self.decryptor = self.cipher.decryptor()
 
-    async def write(self, data: bytes | bytearray | memoryview) -> None:
+    async def write(self, data: bytes | bytearray | memoryview[int]) -> None:
         """Send the given data, encrypted through the stream, blocking if necessary.
 
         Args:

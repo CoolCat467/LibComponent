@@ -404,7 +404,7 @@ class NetworkEventComponent(NetworkComponent):
 
     async def write_event(
         self,
-        event: Event[bytes | bytearray | memoryview],
+        event: Event[bytes | bytearray],
     ) -> None:
         """Send event to network.
 
@@ -438,7 +438,7 @@ class NetworkEventComponent(NetworkComponent):
     async def write_event_last_minute_data(
         self,
         event_name: str,
-        event_data_function: Callable[[], bytes | bytearray | memoryview],
+        event_data_function: Callable[[], bytes | bytearray],
     ) -> None:
         """Write event to network, but have data to send be generated last minute.
 

@@ -192,19 +192,19 @@ class BaseAsyncWriter(ABC):
         val = to_twos_complement(value, bits=64)
         await self._write_varuint(val, max_bits=64)
 
-    async def write_bytearray(self, data: bytes, /) -> None:
+    async def write_bytearray(self, data: bytearray | bytes, /) -> None:
         """Write an arbitrary sequence of bytes, prefixed with a varint of it's size.
 
         Raises ValueError if length is is outside of the range of a 32-bit signed integer.
         """
         await self.write_varint(len(data))
-        await self.write(data)
+        await self.write(bytes(data))
 
     async def write_ascii(self, value: str, /) -> None:
         """Write ISO-8859-1 encoded string, with NULL (0x00) at the end to indicate string end."""
-        data = bytearray(value, "ISO-8859-1")
+        data = value.encode(encoding="ISO-8859-1")
         await self.write(data)
-        await self.write(bytearray.fromhex("00"))
+        await self.write(b"\x00")
 
     async def write_utf(self, value: str, /) -> None:
         """Write a UTF-8 encoded string, prefixed with a varint of it's size (in bytes).
@@ -223,7 +223,7 @@ class BaseAsyncWriter(ABC):
                 "Maximum character limit for writing strings is 32767 characters.",
             )
 
-        data = bytearray(value, "utf-8")
+        data = value.encode(encoding="utf-8")
         await self.write_varint(len(data))
         await self.write(data)
 
@@ -346,19 +346,19 @@ class BaseSyncWriter(ABC):
         val = to_twos_complement(value, bits=64)
         self._write_varuint(val, max_bits=64)
 
-    def write_bytearray(self, data: bytes, /) -> None:
+    def write_bytearray(self, data: bytearray | bytes, /) -> None:
         """Write an arbitrary sequence of bytes, prefixed with a varint of it's size.
 
         Raises ValueError if length is is outside of the range of a 32-bit signed integer.
         """
         self.write_varint(len(data))
-        self.write(data)
+        self.write(bytes(data))
 
     def write_ascii(self, value: str, /) -> None:
         """Write ISO-8859-1 encoded string, with NULL (0x00) at the end to indicate string end."""
-        data = bytearray(value, "ISO-8859-1")
+        data = value.encode(encoding="ISO-8859-1")
         self.write(data)
-        self.write(bytearray.fromhex("00"))
+        self.write(b"\x00")
 
     def write_utf(self, value: str, /) -> None:
         """Write a UTF-8 encoded string, prefixed with a varint of it's size (in bytes).
@@ -377,7 +377,7 @@ class BaseSyncWriter(ABC):
                 "Maximum character limit for writing strings is 32767 characters.",
             )
 
-        data = bytearray(value, "utf-8")
+        data = value.encode(encoding="utf-8")
         self.write_varint(len(data))
         self.write(data)
 
