@@ -28,4 +28,4 @@ pip install git+https://github.com/CoolCat467/LibComponent.git
 
 ### License
 -------
-Code and documentation are available according to the GNU General Public License v3.0 (see [LICENSE](https://github.com/CoolCat467/idlemypyextension/blob/HEAD/LICENSE)).
+Code and documentation are available according to the GNU Lesser General Public License v3.0 (see [LICENSE](https://github.com/CoolCat467/idlemypyextension/blob/HEAD/LICENSE)).
