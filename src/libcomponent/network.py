@@ -84,7 +84,7 @@ class NetworkComponent(Component, BaseAsyncReader, BaseAsyncWriter):
         super().__init__(name)
 
         self.timeout: int | float = 3
-        self._stream: trio.SocketStream | None = None
+        self._stream: trio.abc.HalfCloseableStream | None = None
 
     @property
     def not_connected(self) -> bool:
@@ -92,7 +92,7 @@ class NetworkComponent(Component, BaseAsyncReader, BaseAsyncWriter):
         return self._stream is None
 
     @property
-    def stream(self) -> trio.SocketStream:
+    def stream(self) -> trio.abc.HalfCloseableStream:
         """Trio SocketStream or raise NetworkStreamNotConnectedError."""
         if self._stream is None:
             raise NetworkStreamNotConnectedError("Stream not connected!")
@@ -103,7 +103,7 @@ class NetworkComponent(Component, BaseAsyncReader, BaseAsyncWriter):
         cls,
         *args: object,
         kwargs: dict[str, object] | None = None,
-        stream: trio.SocketStream,
+        stream: trio.abc.HalfCloseableStream,
     ) -> Self:
         """Initialize from stream."""
         if kwargs is None:
@@ -142,7 +142,7 @@ class NetworkComponent(Component, BaseAsyncReader, BaseAsyncWriter):
         """
         content = bytearray()
         while max_read_count := length - len(content):
-            received = b""
+            received: bytes | bytearray = b""
             # try:
             with trio.move_on_after(self.timeout) as cancel_scope:
                 received = await self.stream.receive_some(max_read_count)

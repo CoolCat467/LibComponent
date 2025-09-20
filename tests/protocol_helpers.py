@@ -6,20 +6,21 @@ from __future__ import annotations
 __author__ = "ItsDrike"
 __license__ = "LGPL-3.0-only"
 
+from typing import Any
 from unittest.mock import AsyncMock, Mock
 
 
 class WriteFunctionMock(Mock):
     """Mock write function, storing the written data."""
 
-    def __init__(self, *a, **kw):
+    def __init__(self, *a: Any, **kw: Any) -> None:
         super().__init__(*a, **kw)
         self.combined_data = bytearray()
 
     def __call__(
         self,
         data: bytes,
-    ) -> None:  # pyright: ignore[reportIncompatibleMethodOverride]
+    ) -> Any:  # pyright: ignore[reportIncompatibleMethodOverride]
         """Override mock's ``__call__`` to extend our :attr:`.combined_data` bytearray.
 
         This allows us to keep track of exactly what data was written by the mocked write function
@@ -51,7 +52,12 @@ class WriteFunctionAsyncMock(WriteFunctionMock, AsyncMock):
 class ReadFunctionMock(Mock):
     """Mock read function, giving pre-defined data."""
 
-    def __init__(self, *a, combined_data: bytearray | None = None, **kw):
+    def __init__(
+        self,
+        *a: Any,
+        combined_data: bytearray | None = None,
+        **kw: Any,
+    ) -> None:
         super().__init__(*a, **kw)
         if combined_data is None:
             combined_data = bytearray()
@@ -60,7 +66,7 @@ class ReadFunctionMock(Mock):
     def __call__(
         self,
         length: int,
-    ) -> bytearray:  # pyright: ignore[reportIncompatibleMethodOverride]
+    ) -> Any:  # pyright: ignore[reportIncompatibleMethodOverride]
         """Override mock's __call__ to make it return part of our :attr:`.combined_data` bytearray.
 
         This allows us to make the return value always be the next requested part (length) of

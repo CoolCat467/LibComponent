@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-# Copyright (C) 2023-2024  CoolCat467
+# Copyright (C) 2023-2025  CoolCat467
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -36,10 +36,10 @@ if TYPE_CHECKING:
 
     from mypy_extensions import u8
 
-T = TypeVar("T")
+T_co = TypeVar("T_co", covariant=True)
 
 
-class Event(Generic[T]):
+class Event(Generic[T_co]):
     """Event with name, data, and re-raise levels."""
 
     __slots__ = ("data", "level", "name")
@@ -47,7 +47,7 @@ class Event(Generic[T]):
     def __init__(
         self,
         name: str,
-        data: T,
+        data: T_co,
         levels: u8 = 0,
     ) -> None:
         """Initialize event."""

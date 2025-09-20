@@ -39,7 +39,7 @@ def test_no_data_read() -> None:
     buf = Buffer(b"Blip")
     with pytest.raises(
         IOError,
-        match="^Requested to read more data than available.",
+        match=r"^Requested to read more data than available\.",
     ):
         buf.read(len(buf) + 1)
 

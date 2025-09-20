@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import gc
+from typing import TYPE_CHECKING
 
 import pytest
 import trio
@@ -11,6 +12,13 @@ from libcomponent.component import (
     Event,
     ExternalRaiseManager,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
+    from typing_extensions import TypeVarTuple, Unpack
+
+    PosArgT = TypeVarTuple("PosArgT")
 
 
 def test_event_init() -> None:
@@ -51,7 +59,7 @@ def test_component_manager_property_error() -> None:
     assert not component.manager_exists
     with pytest.raises(
         AttributeError,
-        match="^No component manager bound for",
+        match=r"^No component manager bound for",
     ):
         component.manager  # noqa: B018
 
@@ -279,12 +287,20 @@ async def test_raises_event_in_nursery() -> None:
     async with trio.open_nursery() as nursery:
         original = nursery.start_soon
 
-        def replacement(*args: object, **kwargs: object) -> object:
+        def replacement(
+            async_fn: Callable[[Unpack[PosArgT]], Awaitable[object]],
+            *args: Unpack[PosArgT],
+            name: object = None,
+        ) -> None:
             nonlocal nursery_called
             nursery_called = True
-            return original(*args, **kwargs)
+            return original(
+                async_fn,
+                *args,
+                name=name,
+            )
 
-        nursery.start_soon = replacement
+        nursery.start_soon = replacement  # type: ignore[method-assign]
 
         manager = ExternalRaiseManager("manager", nursery)
         manager.register_handler("bean_event", call_bean)
@@ -306,12 +322,20 @@ async def test_internal_does_not_raise_event_in_nursery() -> None:
     async with trio.open_nursery() as nursery:
         original = nursery.start_soon
 
-        def replacement(*args: object, **kwargs: object) -> object:
+        def replacement(
+            async_fn: Callable[[Unpack[PosArgT]], Awaitable[object]],
+            *args: Unpack[PosArgT],
+            name: object = None,
+        ) -> None:
             nonlocal nursery_called
             nursery_called = True
-            return original(*args, **kwargs)
+            return original(
+                async_fn,
+                *args,
+                name=name,
+            )
 
-        nursery.start_soon = replacement
+        nursery.start_soon = replacement  # type: ignore[method-assign]
 
         manager = ExternalRaiseManager("manager", nursery)
         manager.register_handler("bean_event", call_bean)
@@ -402,7 +426,7 @@ def test_unregister_handler_unregistered_failure() -> None:
     manager = ComponentManager("manager")
     with pytest.raises(
         ValueError,
-        match="^Component named 'cat' is not registered!$",
+        match=r"^Component named 'cat' is not registered!$",
     ):
         manager.unregister_component_handler("event_name", event_call, "cat")
 

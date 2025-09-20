@@ -79,7 +79,7 @@ async def test_from_stream() -> None:
 
     named = NetworkComponent.from_stream(
         kwargs={"name": "name"},
-        stream=stream,
+        stream=stream,  # type: ignore[arg-type]
     )
     with pytest.raises(RuntimeError, match="Already connected!"):
         await named.connect("example.com", 80)
